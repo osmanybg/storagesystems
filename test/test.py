@@ -1,10 +1,37 @@
 import dask.dataframe as dd
+import pandas as pd
 
-baseFileName = "../data/cluster10_sample"
+baseFileName = "../data/cluster1"
 
 # Read the Parquet file
 df = dd.read_parquet(f"{baseFileName}.parquet")
 
+
+result = df['hour'].value_counts().compute()
+print(result.items())
+exit()
+
+
+# Group by 'datetime' and count the number of rows in each group
+datetime_counts = df.groupby('day').size().compute()
+
+# Convert the Dask Series to a Pandas DataFrame
+result_df = datetime_counts.to_frame(name='count').reset_index()
+
+print(result_df)
+exit()
+
+threshold = pd.Timestamp('1970-01-01 01:00:00')
+
+    # Filter the DataFrame for datetimes greater than the threshold
+filtered_df = df[df['datetime'] > threshold]
+print(len(filtered_df))
+
+# Calculate the number of distinct datetime values
+distinct_df = filtered_df['day'].unique().compute()
+print(len(distinct_df))
+print(distinct_df.head())
+exit()
 
 print("DataFrame information:")
 print(f"Columns: {df.columns.tolist()}")

@@ -1,4 +1,4 @@
-len(df) = 139150615
+https://github.com/twitter/cache-trace/blob/master/stat/2020Mar.md
 
 Significance and Motivation
 The topic I have chosen for my research paper is "Analysis of Cache Access Patterns and Workload Composition Using Public Cache Traces." This topic focuses on understanding the temporal patterns of cache accesses and the composition of operations (e.g., get, set, delete) in large-scale cache systems.
