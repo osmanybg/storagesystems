@@ -1,14 +1,15 @@
 import dask.dataframe as dd
 import pandas as pd
 
-baseFileName = "../data/cluster1"
+baseFileName = "../data/cluster10"
 
 # Read the Parquet file
 df = dd.read_parquet(f"{baseFileName}.parquet")
 
+print(df.head(100))
 
 result = df['hour'].value_counts().compute()
-print(result.items())
+print(list(result.items()))
 exit()
 
 

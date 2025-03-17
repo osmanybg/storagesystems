@@ -1,8 +1,8 @@
 import sys
 import os.path
-from CacheTraceTemporalAnalyzer import CacheTraceTemporalAnalyzer
+from classes.CacheTraceTemporalAnalyzer import CacheTraceTemporalAnalyzer
 
-def process(filename):
+def process(fileName):
     dirPath = os.path.dirname(fileName)
     baseName = os.path.splitext(os.path.basename(fileName))[0]
     baseFileName = os.path.join(dirPath, baseName)

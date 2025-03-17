@@ -90,32 +90,6 @@ class CacheTraceTemporalAnalyzer:
                 
         except Exception as e:
             print(f"  Dask processing failed: {e}")
-            print(f"  Falling back to pandas with chunking...")
-            
-            # Second attempt: Use pandas with chunking
-            try:
-                # Get file size to estimate number of chunks
-                file_size = os.path.getsize(file_path) / (1024 * 1024)  # Convert to MB
-                print(f"  File size: {file_size:.2f} MB")
-                
-                # Process in chunks
-                for chunk_num, df_chunk in enumerate(pd.read_parquet(file_path, chunksize=self.chunk_size)):
-                    print(f"  Processing chunk {chunk_num+1} with {len(df_chunk)} rows")
-                    self._process_chunk(df_chunk)
-                    gc.collect()  # Force garbage collection
-                    
-            except Exception as nested_e:
-                print(f"  Pandas chunking failed: {nested_e}")
-                print(f"  Attempting to read entire file at once (may cause memory issues)...")
-                
-                # Last resort: Try to read the entire file
-                try:
-                    df = pd.read_parquet(file_path)
-                    print(f"  Processing entire file with {len(df)} rows")
-                    self._process_chunk(df)
-                    gc.collect()  # Force garbage collection
-                except Exception as final_e:
-                    print(f"  ERROR: Could not process file {file_path}: {final_e}")
     
     def _process_chunk(self, df):
         """
@@ -140,17 +114,28 @@ class CacheTraceTemporalAnalyzer:
         for dt, count in daily_series.items():
             self.daily_counts[dt] = self.daily_counts.get(dt, 0) + count
         
-        # Hour of day distribution
-        hour_counts = df.groupby(df['datetime'].dt.hour).size().to_numpy()
-        for i, count in enumerate(hour_counts):
-            if i < len(self.hour_of_day_counts):
-                self.hour_of_day_counts[i] += count
+
+        # Hourly counts
+        # df["day_of_week"] = df["datetime"].dt.day_name()
+        # hourly_series = df.groupby(df['datetime'].dt.hour).size()
+        df["hour_of_day"] = df["datetime"].dt.hour
+        hourly_counts = df.groupby("hour_of_day").size().reset_index(name='count')
+
+        for i, row in hourly_counts.iterrows():
+            self.hour_of_day_counts[row['hour_of_day']] += row['count']
         
         # Day of week distribution
-        dow_counts = df.groupby(df['datetime'].dt.dayofweek).size().to_numpy()
-        for i, count in enumerate(dow_counts):
-            if i < len(self.day_of_week_counts):
-                self.day_of_week_counts[i] += count
+        df['day_of_week'] = df['datetime'].dt.dayofweek
+        dow_counts = df.groupby('day_of_week').size().reset_index(name='count')
+
+        for i, row in dow_counts.iterrows():
+            self.day_of_week_counts[row['day_of_week']] += row['count']
+        
+        # # Day of week distribution
+        # dow_counts = df.groupby(df['datetime'].dt.dayofweek).size().to_numpy()
+        # for i, count in enumerate(dow_counts):
+        #     if i < len(self.day_of_week_counts):
+        #         self.day_of_week_counts[i] += count
         
         # Operation counts
         op_counts = df.groupby('operation').size()
@@ -491,8 +476,8 @@ class CacheTraceTemporalAnalyzer:
             self.peak_summary["peak_periods_by_hour"] = peak_by_hour
             
             # Save the summary
-            with open(self.output_dir / "data" / "peak_periods_summary.json", 'w') as f:
-                json.dump(self.peak_summary, f, indent=2)
+            # with open(self.output_dir / "data" / "peak_periods_summary.json", 'w') as f:
+            #     json.dump(self.peak_summary, f, indent=2)
                 
             # Plot peak distribution by hour
             plt.figure(figsize=(12, 6))
@@ -578,17 +563,17 @@ class CacheTraceTemporalAnalyzer:
                 "peak_periods": self.peak_summary
             }
             
-            # Save summary to JSON
+            # # Save summary to JSON
             # with open(self.output_dir / "data" / "summary_statistics.json", 'w') as f:
+            #     json.dump(summary, f, indent=2)
+                
+            # print("Summary statistics saved to", self.output_dir / "data" / "summary_statistics.json")
+
+            # Save summary to JSON
             with open(self.output_dir / "data" / "temporal_analysis_output.json", 'w') as f:
                 json.dump(summary, f, indent=2)
                 
-            print("Summary statistics saved to", self.output_dir / "data" / "summary_statistics.json")
+            print("Summary statistics saved to", self.output_dir / "data" / "temporal_analysis_output.json")
 
-            # Save summary to JSON
-            with open(self.output_dir / "data" / "summary_statistics.json", 'w') as f:
-                json.dump(summary, f, indent=2)
-                
-            print("Summary statistics saved to", self.output_dir / "data" / "summary_statistics.json")
         except Exception as e:
             print(f"Error in saving summary statistics: {e}")

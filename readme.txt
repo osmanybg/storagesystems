@@ -18,7 +18,7 @@ Methodology
 ok- Dataset Exploration:
 I will use the publicly available Twitter cache traces, which include fields like timestamp, operation, key size, and value size.
 
-Data Cleaning and Aggregation:
+ok- Data Cleaning and Aggregation:
 I will preprocess the data to handle missing or invalid entries and aggregate requests by time intervals (e.g., hourly or daily).
 
 Temporal Analysis:

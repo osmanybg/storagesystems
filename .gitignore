@@ -1,4 +1,9 @@
-data/
+/data/
+/test/data/
+/sample/
+/sampleout/
+
+/analysis_output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
