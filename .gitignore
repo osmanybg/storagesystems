@@ -1,7 +1,7 @@
-/data/
-/test/
-/sample/
-/sampleout/
+/01.dataset_analysis/data/
+/01.dataset_analysis/test/
+/01.dataset_analysis/sample/
+/01.dataset_analysis/sampleout/
 
 
 # Byte-compiled / optimized / DLL files
