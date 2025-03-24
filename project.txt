@@ -16,24 +16,25 @@ How do access patterns and operation distributions inform cache optimization str
 The insights from this analysis can help identify areas for improving cache hit rates and reducing latency.
 Methodology
 
-ok- Dataset Exploration:
+- Dataset Exploration:
 I will use the publicly available Twitter cache traces, which include fields like timestamp, operation, key size, and value size.
 
-ok- Data Cleaning and Aggregation:
+- Data Cleaning and Aggregation:
 I will preprocess the data to handle missing or invalid entries and aggregate requests by time intervals (e.g., hourly or daily).
 
-ok- Temporal Analysis:
+- Temporal Analysis:
 I will analyze timestamp data to identify peak access times and correlate these with operation types.
 
-ok- Workload Composition:
+- Workload Composition:
 I will calculate the proportion of each operation type (get, set, delete, etc.) to determine workload composition and understand its trends over time.
 
-Visualization and Insights:
+- Visualization and Insights:
 I will create visualizations to present the results and interpret the workload patterns and their implications.
-ok- I will research for an appropriate tool for visualizations, including Plotly and how it may help present trends more effectively.
+I will research for an appropriate tool for visualizations, including Plotly and how it may help present trends more effectively.
 
-Bias consideration
+- Bias consideration
 I will investigate possible bias in the used dataset and how it might affect generalizability.
+
 Challenges
 
 Data Size and Complexity:

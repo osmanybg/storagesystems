@@ -2,7 +2,7 @@
 /01.dataset_analysis/test/
 /01.dataset_analysis/sample/
 /01.dataset_analysis/sampleout/
-
+/01.dataset_analysis/backup/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
