@@ -1,0 +1,14 @@
+{
+  "threshold": 1000.0,
+  "num_peak_periods": 1,
+  "percentage_of_peak_periods": 100.0,
+  "avg_request_volume_peak": 1000.0,
+  "avg_request_volume_non_peak": NaN,
+  "ratio_peak_to_non_peak": NaN,
+  "peak_periods_by_day": {
+    "Thursday": 1
+  },
+  "peak_periods_by_hour": {
+    "0": 1
+  }
+}

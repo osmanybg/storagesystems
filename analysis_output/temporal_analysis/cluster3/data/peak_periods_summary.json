@@ -1,0 +1,32 @@
+{
+  "threshold": 6030156.5,
+  "num_peak_periods": 18,
+  "percentage_of_peak_periods": 10.227272727272728,
+  "avg_request_volume_peak": 6961028.555555556,
+  "avg_request_volume_non_peak": 4398789.860759494,
+  "ratio_peak_to_non_peak": 1.5824871784972394,
+  "peak_periods_by_day": {
+    "Monday": 3,
+    "Saturday": 2,
+    "Sunday": 3,
+    "Tuesday": 8,
+    "Wednesday": 2
+  },
+  "peak_periods_by_hour": {
+    "0": 1,
+    "1": 1,
+    "8": 1,
+    "9": 1,
+    "10": 2,
+    "11": 1,
+    "12": 1,
+    "13": 1,
+    "14": 1,
+    "15": 1,
+    "16": 1,
+    "17": 1,
+    "19": 1,
+    "20": 3,
+    "21": 1
+  }
+}

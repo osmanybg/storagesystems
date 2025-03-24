@@ -1,3 +1,4 @@
+https://github.com/twitter/cache-trace/
 https://github.com/twitter/cache-trace/blob/master/stat/2020Mar.md
 
 Significance and Motivation
@@ -21,10 +22,10 @@ I will use the publicly available Twitter cache traces, which include fields lik
 ok- Data Cleaning and Aggregation:
 I will preprocess the data to handle missing or invalid entries and aggregate requests by time intervals (e.g., hourly or daily).
 
-Temporal Analysis:
+ok- Temporal Analysis:
 I will analyze timestamp data to identify peak access times and correlate these with operation types.
 
-Workload Composition:
+ok- Workload Composition:
 I will calculate the proportion of each operation type (get, set, delete, etc.) to determine workload composition and understand its trends over time.
 
 Visualization and Insights:
