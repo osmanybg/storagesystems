@@ -1,84 +1,284 @@
+# Twitter Cache Trace Analysis Project Instructions
 
-# Related Works on Cache Analysis
+This document provides comprehensive instructions for setting up and executing all components of the Twitter Cache Trace Analysis project based on the GitHub repository at https://github.com/osmanybg/storagesystems.
 
-## Key Papers
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Repository Structure](#repository-structure)
+3. [Environment Setup](#environment-setup)
+4. [Dataset Analysis](#dataset-analysis)
+5. [Result Analysis](#result-analysis)
+6. [Generating Visualizations](#generating-visualizations)
+7. [Compiling the LaTeX Research Paper](#compiling-the-latex-research-paper)
+8. [Troubleshooting](#troubleshooting)
 
-### 1. A Large-scale Analysis of Hundreds of In-memory Key-value Cache Clusters at Twitter
-**Authors:** Juncheng Yang, Yao Yue, K. V. Rashmi
-**Publication:** ACM Transactions on Storage, Vol. 17, No. 3, Article 17, August 2021
+## Project Overview
 
-**Key Findings:**
-- Analyzed traces from 153 Twemcache clusters at Twitter, sifting through over 80 TB of data
-- In-memory caching doesn't always serve read-heavy workloads; write-heavy workloads are common (>30% write ratio) in more than 35% of the clusters
-- TTL is critical in in-memory caching as it limits effective working set size
-- Cache workloads follow Zipfian popularity distribution, sometimes with very high skew
-- Object size distribution is not static over time, with some workloads showing diurnal patterns and sudden changes
-- Under reasonable cache sizes, FIFO often shows similar performance to LRU
-- Twitter uses Twemcache, a fork of Memcached, as their primary caching solution
+This project analyzes cache access patterns and workload composition using Twitter's publicly available cache traces. The analysis focuses on four clusters (1, 2, 3, and 10) and examines:
+- Temporal access patterns (hourly and daily distributions)
+- Workload composition (operation types, key/value sizes, TTL distributions)
+- Implications for cache optimization strategies
+- Possible biases
 
-**Methodology:**
-- Collected production traces from 153 in-memory cache clusters
-- Performed comprehensive analysis of traffic patterns, TTL, popularity distribution, and size distribution
-- Interpreted workloads in the context of business logic
-- Made traces available to the research community
+## Repository Structure
 
-### 2. FrozenHot Cache: Rethinking Cache Management for Modern Hardware
-**Authors:** Ziyue Qiu, Juncheng Yang, Juncheng Zhang, Cheng Li, Xiaosong Ma, Qi Chen, Mao Yang, Yinlong Xu
-**Publication:** Eighteenth European Conference on Computer Systems (EuroSys '23), May 8-12, 2023
+The repository is organized as follows:
 
-**Key Findings:**
-- Proposes a new cache management approach called FrozenHot
-- Evaluated using production traces from MSR and Twitter
-- Improves throughput of three baseline cache algorithms by up to 551%
-- Partitions cache space into a frozen cache for hot objects and a dynamic cache
-- Eliminates promotion and locking for hot objects, improving scalability
+```
+storagesystems/
+├── 01.dataset_analysis/                  # Scripts for initial data processing
+│   ├── analysis_output/                  # Output from dataset analysis
+│   ├── classes/                          # Python classes for data processing
+│   ├── data/                             # Data to be analyzed (need to be created)
+│   ├── 01.loadAndPreprocessing.py        # Script for loading and preprocessing data
+│   ├── 02.temporalAnalysis.py            # Script for temporal analysis
+│   ├── 03.workloadComposition.py         # Script for workload composition analysis
+│   └── createSampleFile.py               # Utility script for creating sample files
+├── 02.result_analysis/                   # Scripts for analyzing results
+│   ├── analysis_output/visualizations/   # Generated visualization images
+│   ├── data/                             # Processed data for analysis
+│   ├── 01.temporalAnalysis.py            # Script for temporal analysis visualizations
+│   └── 02.workloadComposition.py         # Script for workload composition visualizations
+├── Osmany_Becerra.Final_Research_Project.Storage_systems.pdf  # Final PDF research paper
+├── Osmany_Becerra.Final_Research_Project.Storage_systems.tex  # LaTeX source for research paper
+├── project.txt                           # Project description
+├── readme.md                             # Project overview and instructions to reproduce the results
+└── requirements.txt                      # Python package requirements
+```
 
-### 3. Twitter Cache-Trace Repository
-**Source:** GitHub (https://github.com/twitter/cache-trace)
+## Environment Setup
 
-**Description:**
-- Public repository containing anonymized production cache traces from Twitter
-- Includes traces from 54 clusters
-- Provides data for research on cache performance, workload analysis, and optimization strategies
+NOTE: The paths uses the Windows notation, adapt it to other systems if apropriate.
 
-## Common Themes in Cache Analysis Research
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package installer)
+- LaTeX distribution (for compiling the research paper)
 
-1. **Workload Characterization:**
-   - Analysis of operation types (get, set, delete)
-   - Request patterns and temporal variations
-   - Key and value size distributions
+### Setting Up Python Virtual Environment
 
-2. **Performance Optimization:**
-   - Cache replacement policies (LRU, FIFO, etc.)
-   - TTL management and expired object removal
-   - Scalability improvements for multi-core systems
+```bash
+# Clone the repository
+git clone https://github.com/osmanybg/storagesystems.git
+cd storagesystems
 
-3. **Challenges in Modern Caching Systems:**
-   - Write-heavy workloads
-   - Temporal variations in access patterns
-   - Object size distribution changes
-   - Balancing hit rate and latency
+# Create a virtual environment
+python -m venv venv
 
-4. **Methodology Approaches:**
-   - Trace-based analysis
-   - Simulation of different cache policies
-   - Production system implementation and testing
+# Activate the virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
 
-## Research Gaps
+# Install required packages
+pip install -r requirements.txt
+```
 
-1. Limited public datasets for cache trace analysis
-2. Few studies on the impact of TTL on cache performance
-3. Limited research on write-heavy workloads
-4. Need for more analysis of temporal patterns in cache access
-5. Limited understanding of how workload composition affects optimal caching strategies
+The `requirements.txt` file includes the following packages:
+```
+dask
+pandas
+numpy
+matplotlib
+seaborn
+pyarrow
+fastparquet
+statsmodels
+plotly
+kaleido
+```
 
-## Relevance to Current Project
+### Getting the data
 
-The current project on "Analysis of Cache Access Patterns and Workload Composition Using Public Cache Traces" directly addresses several research gaps:
+Create the data directory
 
-1. It utilizes the publicly available Twitter cache traces
-2. It focuses on temporal access patterns, which is an area needing more research
-3. It analyzes workload composition to understand its impact on caching strategies
-4. It examines multiple clusters to identify patterns and differences across workloads
+```bash
+mkdir .\01.dataset_analysis\data
+```
 
-This project will contribute to the field by providing insights into how temporal patterns and workload composition can inform cache optimization strategies, potentially leading to improved cache hit rates and reduced latency in production systems.
+Download the dataset files form https://github.com/twitter/cache-trace/tree/master/samples/2020Mar and place them on storagesystems\01.dataset_analysis\data
+
+Then uncompress them one by one, for example:
+
+```bash
+zstd -d .\cluster1.sort.zst
+```
+
+Once uncompressed, the .zst files can be deleted.
+
+## Dataset Analysis
+
+The dataset analysis is performed in three steps:
+
+### 1. Load and Preprocess Data
+
+This step loads the Twitter cache trace data and performs initial preprocessing. 
+
+```bash
+cd 01.dataset_analysis
+```
+
+The processing needs to be done for each dataset file, for example:
+
+```bash
+python 01.loadAndPreprocessing.py .\data\cluster1.sort
+```
+
+This script:
+- Loads the raw Twitter cache trace data
+- Cleans and preprocesses the data
+- Saves the processed data in parquet format for further analysis 
+
+Once the preprocessing is completed, the .sort files are no longer needed and can be deleted.
+
+### 2. Temporal Analysis
+
+This step analyzes the temporal patterns in the cache access data. The processing needs to be done for each dataset file, for example:
+
+```bash
+python 02.temporalAnalysis.py .\data\cluster1.parquet\
+```
+
+This script:
+- Analyzes hourly request distributions
+- Analyzes daily request distributions
+- Identifies peak periods
+- Calculates request variability metrics
+- Saves the results to the `analysis_output` directory
+
+### 3. Workload Composition Analysis
+
+This step analyzes the composition of the cache workload. The processing needs to be done for each dataset file, for example:
+
+```bash
+python 03.workloadComposition.py .\data\cluster1.parquet\
+```
+
+This script:
+- Analyzes operation type distributions
+- Analyzes key and value size distributions
+- Analyzes TTL distributions
+- Calculates get/add ratios
+- Saves the results to the `analysis_output` directory
+
+## Result Analysis
+
+The result analysis uses the output from the dataset analysis to create visualizations and derive insights.
+
+### Prerequisites
+
+### 1. Temporal Analysis Visualization
+
+```bash
+cd ../02.result_analysis
+python 01.temporalAnalysis.py
+```
+
+This script:
+- Loads the temporal analysis results from the dataset analysis
+- Creates visualizations for hourly and daily patterns
+- Generates comparative visualizations across clusters
+- Saves the visualizations to the `analysis_output/visualizations` directory
+
+### 2. Workload Composition Visualization
+
+```bash
+python 02.workloadComposition.py
+```
+
+This script:
+- Loads the workload composition results from the dataset analysis
+- Creates visualizations for operation types, key/value sizes, and TTL distributions
+- Generates comparative visualizations across clusters
+- Saves the visualizations to the `analysis_output/visualizations` directory
+
+## Generating Visualizations
+
+All visualizations are automatically generated by the analysis scripts and saved to the `02.result_analysis/analysis_output/visualizations` directory. The following types of visualizations are created:
+
+1. **Temporal Analysis Visualizations**:
+   - Hourly request distribution
+   - Daily request distribution
+   - Peak period analysis
+   - Request volume comparison
+   - Request variability analysis
+
+2. **Workload Composition Visualizations**:
+   - Operation type distribution
+   - Key size distribution
+   - Value size distribution
+   - TTL distribution
+   - Get/add ratio
+
+To view all generated visualizations:
+
+```bash
+ls -la 02.result_analysis/analysis_output/visualizations/
+```
+
+## Compiling the LaTeX Research Paper
+
+The repository includes the LaTeX source file for the research paper. To compile it:
+
+### Prerequisites
+
+Ensure you have a LaTeX distribution installed:
+
+```bash
+# On Ubuntu/Debian
+sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra texlive-science
+```
+
+### Compiling the Paper
+
+```bash
+# Compile the LaTeX document
+pdflatex Osmany_Becerra.Final_Research_Project.Storage_systems.tex
+pdflatex Osmany_Becerra.Final_Research_Project.Storage_systems.tex  # Run twice to resolve references
+```
+
+The compiled PDF will be available as `Osmany_Becerra.Final_Research_Project.Storage_systems.pdf` in the same directory.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Missing Python packages**:
+   - Ensure all required packages are installed: `pip install -r requirements.txt`
+   - If specific errors mention missing packages, install them individually
+
+2. **Data loading errors**:
+   - Verify that the Twitter cache trace data files are in the correct location
+   - Check file permissions
+
+3. **Visualization errors**:
+   - Ensure the output directories exist and are writable
+   - If using a headless server, set the matplotlib backend: `export MPLBACKEND=Agg`
+
+4. **LaTeX compilation errors**:
+   - Ensure all required LaTeX packages are installed
+   - Check for syntax errors in the LaTeX files
+   - Run `pdflatex` with the `-interaction=nonstopmode` flag to see all errors
+
+### Getting Help
+
+If you encounter issues not covered in this guide:
+
+1. Check the project repository for updated documentation
+2. Open an issue on the GitHub repository with a detailed description of the problem
+3. Consult the original Twitter Cache Trace repository for dataset-specific questions
+
+## Citation
+
+If you use this analysis in your research, please cite:
+
+```
+@misc{TwitterCacheAnalysis2025,
+  author = {Osmany Becerra},
+  title = {Analysis of Cache Access Patterns and Workload Composition Using Public Cache Traces},
+  year = {2025},
+  month = {March},
+  note = {Final Research Project for Storage Systems Class}
+}
+```
