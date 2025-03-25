@@ -37,10 +37,11 @@ storagesystems/
 ├── 02.result_analysis/                   # Scripts for analyzing results
 │   ├── analysis_output/visualizations/   # Generated visualization images
 │   ├── data/                             # Processed data for analysis
+│   ├── 00.copyAnalysisFiles.py           # Script to copy analysis results to the data directory
 │   ├── 01.temporalAnalysis.py            # Script for temporal analysis visualizations
 │   └── 02.workloadComposition.py         # Script for workload composition visualizations
 ├── Osmany_Becerra.Final_Research_Project.Storage_systems.pdf  # Final PDF research paper
-├── Osmany_Becerra.Final_Research_Project.Storage_systems.tex  # LaTeX source for research paper
+├── LaTex_OverLeaf_code.tex               # LaTeX source for research paper
 ├── project.txt                           # Project description
 ├── readme.md                             # Project overview and instructions to reproduce the results
 └── requirements.txt                      # Python package requirements
@@ -166,9 +167,14 @@ This script:
 
 The result analysis uses the output from the dataset analysis to create visualizations and derive insights.
 
-### Prerequisites
+### 0. Prerequisites
 
-### 1. Temporal Analysis Visualization
+```bash
+cd ../02.result_analysis
+python 00.copyAnalysisFiles.py
+```
+
+### 1. Generate Temporal Analysis Visualizations
 
 ```bash
 cd ../02.result_analysis
@@ -181,7 +187,7 @@ This script:
 - Generates comparative visualizations across clusters
 - Saves the visualizations to the `analysis_output/visualizations` directory
 
-### 2. Workload Composition Visualization
+### 2. Generate Workload Composition Visualization
 
 ```bash
 python 02.workloadComposition.py
@@ -219,66 +225,7 @@ ls -la 02.result_analysis/analysis_output/visualizations/
 
 ## Compiling the LaTeX Research Paper
 
-The repository includes the LaTeX source file for the research paper. To compile it:
+The repository includes the LaTeX source file for the research paper. To compile it using the overleaf template at https://www.overleaf.com/
 
-### Prerequisites
-
-Ensure you have a LaTeX distribution installed:
-
-```bash
-# On Ubuntu/Debian
-sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra texlive-science
-```
-
-### Compiling the Paper
-
-```bash
-# Compile the LaTeX document
-pdflatex Osmany_Becerra.Final_Research_Project.Storage_systems.tex
-pdflatex Osmany_Becerra.Final_Research_Project.Storage_systems.tex  # Run twice to resolve references
-```
-
-The compiled PDF will be available as `Osmany_Becerra.Final_Research_Project.Storage_systems.pdf` in the same directory.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing Python packages**:
-   - Ensure all required packages are installed: `pip install -r requirements.txt`
-   - If specific errors mention missing packages, install them individually
-
-2. **Data loading errors**:
-   - Verify that the Twitter cache trace data files are in the correct location
-   - Check file permissions
-
-3. **Visualization errors**:
-   - Ensure the output directories exist and are writable
-   - If using a headless server, set the matplotlib backend: `export MPLBACKEND=Agg`
-
-4. **LaTeX compilation errors**:
-   - Ensure all required LaTeX packages are installed
-   - Check for syntax errors in the LaTeX files
-   - Run `pdflatex` with the `-interaction=nonstopmode` flag to see all errors
-
-### Getting Help
-
-If you encounter issues not covered in this guide:
-
-1. Check the project repository for updated documentation
-2. Open an issue on the GitHub repository with a detailed description of the problem
-3. Consult the original Twitter Cache Trace repository for dataset-specific questions
-
-## Citation
-
-If you use this analysis in your research, please cite:
-
-```
-@misc{TwitterCacheAnalysis2025,
-  author = {Osmany Becerra},
-  title = {Analysis of Cache Access Patterns and Workload Composition Using Public Cache Traces},
-  year = {2025},
-  month = {March},
-  note = {Final Research Project for Storage Systems Class}
-}
-```
+1. Create the project, upload the 02.result_analysis/analysis_output/visualizations/ to a project folder named visualizations/
+2. Upload or copy the content of the LaTex_OverLeaf_code.tex and compile the OverLeaf project.
